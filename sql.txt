@@ -1,0 +1,82 @@
+create table dragons (name varchar(256) primary key, color varchar(256), wingspan numeric (3,0));
+
+create table eggs (weight numeric(3,0), diameter numeric(3,0), dragon varchar(256));
+
+alter table eggs add foreign key (dragon) references dragons (name);
+
+alter table eggs add column id int primary key auto_increment;
+
+create table ornaments (color varchar(256), pattern varchar(256), egg int not null unique);
+
+alter table ornaments add foreign key (egg) references eggs (id);
+
+create table lands (name varchar(256));
+
+create table dragons_in_lands (dragon varchar(256), land varchar(256));
+
+alter table dragons_in_lands add foreign key (dragon) references dragons (name);
+
+alter table lands add primary key (name);
+
+alter table dragons_in_lands add foreign key (land) references lands (name);
+
+insert into dragons (name, color, wingspan) values ('Dygir', 'green', '200'), ('Bondril', 'red', '100'), ('Onosse', 'black', '250'), ('Chiri', 'yellow', '50'), ('Lase', 'blue', '300');
+
+insert into eggs (weight, diameter, dragon) values ('300', '20', 'Dygir'), ('340', '30', 'Dygir'), ('200', '20', 'Bondril'), ('230', '20', 'Onosse'), ('300', '25', 'Onosse'), ('200', '15', 'Onosse');
+
+insert into ornaments (egg, color, pattern) values ((select id from eggs where dragon = 'Dygir' and weight = '300'), 'pink', 'mesh'), ((select id from eggs where dragon = 'Dygir' and weight = '340'), 'black', 'striped'), ((select id from eggs where dragon = 'Bondril'), 'yellow', 'dotted'), ((select id from eggs where dragon = 'Onosse' and weight = '230'), 'blue', 'dotted'), ((select id from eggs where dragon = 'Onosse' and weight = '300'), 'green', 'striped'), ((select id from eggs where dragon = 'Onosse' and weight = '200'), 'red', 'mesh');
+
+insert into lands (name) values ('Froze'), ('Oswia'), ('Oscyae'), ('Oclurg');
+insert into dragons_in_lands (dragon, land) values ('Dygir', 'Froze'), ('Bondril', 'Froze'), ('Dygir', 'Oswia'), ('Onosse', 'Oswia'), ('Chiri', 'Oswia');
+
+create view eggs_ornaments as select diameter, weight, color, pattern from eggs join ornaments on eggs.id = ornaments.egg;
+
+create view dragons_lands as select dragons.name, land from dragons 
+right join dragons_in_lands on dragons.name = dragons_in_lands.dragon;
+
+create view dragons_eggs as select dragons.name, weight, diameter from dragons right join eggs on dragons.name = eggs.dragon;
+
+create view dragons_without_eggs as select dragons.name from dragons left join eggs on dragons.name = eggs.dragon where eggs.dragon is null;
+
+create view wingspan as select name from dragons where wingspan >= 2 and wingspan <= 4;
+
+select * from dragons;
+
+select * from eggs;
+
+select * from ornaments;
+
+select * from lands;
+
+select * from dragons_in_lands;
+
+select * from eggs_ornaments;
+
+select * from dragons_lands;
+
+select * from dragons_eggs;
+
+select * from dragons_without_eggs;
+
+select * from wingspan;
+
+drop view eggs_ornaments;
+
+drop view dragons_lands;
+
+drop view dragons_eggs;
+
+drop view dragons_without_eggs;
+
+drop view wingspan;
+
+drop table dragons_in_lands;
+
+drop table lands;
+
+drop table ornaments;
+
+drop table eggs;
+
+drop table dragons;
+
